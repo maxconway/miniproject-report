@@ -7,33 +7,41 @@
 \date{}
 \maketitle
 \section{Introduction}
-The topic investigated in this project was Drosophila Embryogenesis. This topic, while a highly studied model system, had not been simulated using Smoldyn yet. We studied development cycles 1-13, with a total of 105 different models, covering the interaction of Bicoid, Caudal, Nanos and Hunchback with 20 different species and 38 reactions. These models varied from those including only Bicoid, which has very well characterized properties, to those including all morphogen gradients, where data was more sparse. We validated our results against quantitative data from the Flyex database, showing good agreement, and yielding interesting information about the interaction of embryo shape with measurement technique. 
+The topic investigated in this project was Drosophila Embryogenesis. This topic, while a highly studied model system, had not been simulated using Smoldyn yet. We studied development cycles 1-13, with a total of 105 different models, covering the interaction of Bicoid, Caudal, Nanos and Hunchback with 20 different species and 38 reactions. These models varied from those including only Bicoid, which has very well characterized properties, to those including all morphogen gradients, where data was more sparse. We validated our results against quantitative data from the Flyex database~\cite{Pisarev2009}, showing good agreement and lending support to some of the models tested.
 
 \section{Species}
 \subsection{Bicoid}
-Our basic model for Bicoid was a fixed region of mRNA in the anterior of the cell, which was translated to bicoid protein at a constant rate (rates of 0.3, 4 and 7.4 s-1 were used, as several values appeared in the literature). The Bicoid protein had a constant degradation rate of 0.0003s-1. This produced a stable gradient by cycle 13 at all degradation rates. We also tried two refinements of this model
+Our basic model~\cite{Grimm2010} for Bicoid was a fixed region of mRNA in the anterior of the cell, which was translated to bicoid protein at a constant rate (rates of 0.3, 4 and 7.4 s-1 were used, as several values appeared in the literature). The Bicoid protein had a constant degradation rate of 0.0003s-1. This produced a stable gradient by cycle 13 at all degradation rates. We also experimented with refinements of this model.
 \begin{description}
-\item[Increasing Translation rate:]
-This model, based on x, had the Bicoid mRNA translation rate increasing throughout the duration of development. In our simulations it had not reached stability by cycle 13, but was changing very slowly.
+\item[Increasing Translation rate~\cite{Holloway2011}:]
+This model, had the Bicoid mRNA translation rate increasing throughout the duration of development. In our simulations it had not reached stability by cycle 13, but was changing very slowly.
 \item[mRNA transport:]
-Here we simulated the action of cytoskeletal mRNA transport by starting directed diffusion of Bicoid mRNA towards the posterior of the cell at 1620 seconds into the simulation, but with this mRNA confined to near the cell membrane. Obviously this acted the same as the basic model until the start of diffusion, but after this point produced a flatter gradient, with a peak slightly further from the anterior.
+Here we simulated the action of cytoskeletal mRNA transport by starting directed diffusion of Bicoid mRNA towards the posterior of the cell at fertilization and at 1620 seconds into the simulation, but with this mRNA confined to near the cell membrane~\cite{Spirov2009}. Obviously this acted the same as the basic model until the start of diffusion, but after this point produced a flatter gradient, with a peak slightly further from the anterior, especially when diffusion had been allowed to proceed from fertilization.
 \end{description}
+
 \subsection{Caudal}
 Caudal mRNA was created in an even distribution throughout the cytoplasm, with constant protein production and decay rates. However, Bicoid protein could bind to Caudal mRNA to stop transcription, producing a gradient opposite to of Bicoid, peaking in the posterior.
+
 \subsection{Nanos}
 Nanos mRNA was created fixed in the posterior of the cell, and created protein in much the same way as Bicoid. However, this protein inhibited Bicoid translation, making the Bicoid gradient steeper in the case where mRNA could diffuse, and causing faster stabilization of the Bicoid gradient in all cases.
+
 \subsection{Hunchback}
-The Hunchback model was by far the most complex, but neverthless all rates in it are derived from experimental data. It consists of simple Hunchback transcription and inhibition by Nanos protein, increasing number of nuclei over time (modeled as particles), and 24 reactions to fully model zygotic transcription using 8 different complexes. The simple model of Hunchback inhibition by Nanos produced the expected upward gradient along the anterior-posterior axis, but the full zygotic transcription model suffered performance issues that meant that, even allowing several days of runtime, noise levels were still very high.
+The Hunchback model was by far the most complex, but neverthless all rates in it are derived from experimental data. It consists of simple Hunchback transcription and inhibition by Nanos protein, increasing number of nuclei over time (modelled as particles), and 24 reactions to fully model zygotic transcription using 8 different complexes~\cite{Holloway2011}. The simple model of Hunchback inhibition by Nanos produced the expected upward gradient along the anterior-posterior axis, but the full zygotic transcription model suffered performance issues that meant that, even allowing several days of runtime, noise levels were still very high.
+
 \section{Accuracy}
 Ensuring simulation accuracy was especially important in simulations of the behaviour of Bicoid mRNA and protein, since for these literature data was available that allowed for accurate parameterization, so that the simulation could be expected to produce quantitatively accurate output. The time step was set according to the guidelines in the Smoldyn manual to ensure a spatial resolution of 4μm. 
 
 In the more complex models, such as those including Hunchback, some quantitative accuracy had to be sacrificed for qualitative results, such as by increasing the time step used. Unfortunately, because the Hunchback models took such a disproportionately long time to run, Camgrid was not able to provide a significant speedup, due to Amdahl’s law.
+
 \section{Framework}
 A data handling framework was built around smoldyn using python and the make build system to allow for many simulations to be run over extended periods. The first stage to this was parameter processing using python. This allowed all models to be stored in a spreadsheet, for easy setup and to allow new models to be easily created based on existing ones. A python script processed this spreadsheet to build the required smoldyn files. The make build system was used to schedule simulations. This found all models for which the corresponding results file was out of date or not created yet, and scheduled them for simulation, with the number of concurrent simulations equal to the number of processors available, and new simulations scheduled as old ones were completed. Once all results were up to date, they were automatically copied to a folder for analysis, ensuring a consistent results set.
+
 \section{Conclusions}
 \subsection{Effect of shape}
 One interesting property that became apparent during simulation was that the actual shape of the embryo had a significant influence upon the shape of the final curves. The literature data that we compared our results to measured fluorescence intensity per unit length of embryo, rather than per unit volume, but this obviously leads to the tapering off of the embryo becoming the dominant effect on the curve shape at the ends, rather than the actual protein concentration. We measured the same quantity from our simulation, so that a correct comparison could be made. Since we modelled the embryo as a cylinder with hemispheric ends, this means that our Bicoid protein concentration curve approaches its peak with a parabolic curve, leading to a Bicoid peak that is closer to the anterior than in the real embryo, which has a more sharply tapered profile.
+
 We considered attempting to model this in smoldyn, but unfortunately, while size changes were possible, moving away from hemispherical end caps in smoldyn would have meant using a full triangular mesh, the creation of which could have taken longer than a week in itself. A simple Matlab model can be used to show this effect, however, by superimposing an exponential gradient onto the shape of a drosophila, and producing a histogram along the anterior-posterior axis.
+\nocite{*}
 \bibliographystyle{plain}
 \bibliography{drosophila-embryogenesis}
 \end{document}
