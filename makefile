@@ -12,3 +12,6 @@ clean:
 	rm -f *.aux
 	rm -f *.blg
 	rm -f *.bbl
+	rm -f *.pdf
+	rm -f *.dvi
+	rm -f *~
