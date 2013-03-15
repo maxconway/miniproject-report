@@ -4,6 +4,9 @@ drosophila-embryogenesis.pdf: drosophila-embryogenesis.tex drosophila-embryogene
 	pdflatex drosophila-embryogenesis.tex
 	pdflatex drosophila-embryogenesis.tex
 
+drosophila-embryogenesis.bib : ~/Documents/bibtex/drosophila\ embryogenesis.bib
+	cp ~/Documents/bibtex/drosophila\ embryogenesis.bib ./drosophila-embryogenesis.bib
+
 clean:
 	rm -f *.log
 	rm -f *.aux
