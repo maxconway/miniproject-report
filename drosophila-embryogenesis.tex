@@ -6,9 +6,9 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{siunitx}
 \usepackage{enumitem}
-\setdescription{noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt}
+\usepackage{comment}
 \setlist[description]{leftmargin=0pt}
-\linespread{0.98}
+\linespread{0.97}
 \sisetup{load-configurations = abbreviations}
 \begin{document}
 \title{\vspace{-2em}Stochastic Simulation of Morphogen Gradients During Drosophila Melanogaster Embryogenesis\vspace{-10pt}}
@@ -18,63 +18,64 @@
 \section{Introduction}
 The topic investigated in this project was Drosophila Embryogenesis, specifically the interaction of the morphogens Bicoid, Caudal, Nanos and Hunchback. This topic, while a highly studied system, had not been modelled stochastically before. We built a total of 105 different models using the Smoldyn~\cite{Andrews2010} particle based simulation suite, covering 20 different species and 38 reactions, over development cycles 1--13. Results were validated against quantitative data from the Flyex database~\cite{Pisarev2009}, showing good agreement, which both supports the accuracy of our model and the deterministic models on which it is based. 
 
-\section{Species, Models and Results}
-The first species studied was Bicoid, due to its extensive characterization. After creating and validating several models of just the Bicoid gradient, we moved on to the other morphogens.
+\section{Models and Results}
+Many combinations of different interactions were simulated at many different precisions. Here the most important models and results are grouped by morphogen.
 \subsection{Bicoid}
-Our basic model~\cite{Grimm2010} for Bicoid was a fixed region of mRNA in the anterior of the cell, which was translated to bicoid protein at a constant rate; this protein degraded at a constant rate of \SI{0.0003}{\second}. Diffusion rates of \SI{0.3}{\micro\metre\squared\per\second}, \SI{4}{\micro\metre\squared\per\second} and \SI{7.4}{\micro\metre\squared\per\second} were used, all literature derived. This produced a stable gradient by cycle 13 at all diffusion rates, but  \SI{4}{\micro\metre\per\second} provided the best fit to Flyex data.  We also experimented with refinements of this model (see figure~\ref{fig:bcd-grads}):
+Our basic model~\cite{Grimm2010} for Bicoid was a fixed region of mRNA in the anterior of the cell, which was translated to bicoid protein at a constant rate of \SI{0.4}{\per\second}; this protein degraded at a constant rate of \SI{0.0003}{\per\second}. Diffusion rates of \SI{0.3}{\micro\metre\squared\per\second}, \SI{4}{\micro\metre\squared\per\second} and \SI{7.4}{\micro\metre\squared\per\second} were used, all literature derived. This produced a stable gradient by cycle 13 at all diffusion rates, but  \SI{4}{\micro\metre\per\second} provided the best fit to Flyex data.  We also experimented with refinements of this model (see figure~\ref{fig:bcd-grads}):
 \begin{description}
 \item[Increasing Translation rate~\cite{Holloway2011}:]
 This model had the Bicoid mRNA translation rate increasing throughout the duration of development due to polyadenylation. In our simulations it had not reached stability by cycle 13, but was changing very slowly.
 \item[mRNA transport~\cite{Spirov2009}:]
 Here we simulated the action of cytoskeletal mRNA transport by starting directed diffusion of Bicoid mRNA towards the posterior of the cell either fertilization or at cycle 3 (\SI{1620}{\second} into the simulation), but with this mRNA confined to near the cell membrane. Obviously this acted the same as the basic model until the start of diffusion, but after this point produced a flatter gradient, with a peak slightly further from the anterior, especially when mRNA transport had been allowed to proceed from fertilization.
 \end{description}
-
 \begin{figure}[h]
 \includegraphics[width=0.5\textwidth]{writeup-bcd-diffusion}
 \caption{Bicoid gradients. D is diffusion coefficient. \label{fig:bcd-grads}}
 \end{figure}
-
 \subsection{Caudal}
-Caudal mRNA was created in an even distribution throughout the cytoplasm, with constant protein production and decay rates~\cite{Bergmann2007}. However, Bicoid protein could bind to Caudal mRNA to stop transcription, producing a gradient opposite to of Bicoid, peaking in the posterior.
+Caudal mRNA was created in an even distribution throughout the cytoplasm, with constant protein production and decay rates~\cite{Bergmann2007} of \SI{0.5}{\per\second} and \SI{0.0003}{\per\second}. However, Bicoid protein could bind to Caudal mRNA to stop transcription, producing a gradient opposite to of Bicoid, peaking in the posterior.
 
 \subsection{Nanos}
-Nanos mRNA was created fixed in the posterior of the cell, and created protein in much the same way as Bicoid~\cite{Kugler2009,Bergmann2007}. However, this protein inhibited Bicoid translation~\cite{Little2011}, making the Bicoid gradient steeper in the case where mRNA could diffuse, and causing faster stabilization of the Bicoid gradient in all cases. Flyex did not include information to evaluate the distribution of Nanos directly, but the effects on other species were as predicted.
+Nanos mRNA was fixed in the posterior of the cell, and created protein in the same way as Bicoid~\cite{Kugler2009,Bergmann2007}. However, this protein inhibited Bicoid translation~\cite{Little2011}, making the Bicoid gradient steeper in the case where mRNA could diffuse, and causing faster stabilization of the Bicoid gradient in all cases. Flyex did not include information to evaluate the distribution of Nanos directly, but the effects on other species were as predicted.
 
 \subsection{Hunchback}
-The Hunchback model was by far the most complex, but neverthless all rates in it are derived from experimental data. It consists of simple Hunchback transcription and inhibition by Nanos protein, increasing number of nuclei over time (modelled as particles), and 24 reactions to fully model zygotic transcription using 8 different complexes~\cite{Holloway2011}. The simple model of Hunchback inhibition by Nanos fitted the experimentally predicted downwards gradient along the anterior-posterior axis, but the full zygotic transcription model suffered performance issues that meant that, even allowing several days of runtime, noise levels were still too high to assert anything more than a qualitative fit (see figure~\ref{fig:all}).
-
+The Hunchback model was by far the most complex, but neverthless most of the rates in it are derived from experimental data. It consists of simple Hunchback transcription and inhibition by Nanos protein, increasing number of nuclei over time (modelled as particles), and 24 reactions to fully model zygotic transcription using 8 different complexes~\cite{Holloway2011}. The simple model of Hunchback inhibition by Nanos fitted the experimentally predicted downwards gradient along the anterior-posterior axis, but the full zygotic transcription model suffered performance issues that meant that, even allowing several days of runtime, noise levels and stochastic variation between simulations were still too high to assert anything more than a qualitative fit (see figure~\ref{fig:all}).
 \begin{figure}[h]
 \includegraphics[width=0.5\textwidth]{writeup-all}
 \caption{Gradients for all morphogens. \label{fig:all}}
 \end{figure}
-
 \section{Methods}
 Some division of labour was used in order to get the best possible result in the time available. My main focus was on the simulation, especially the more technical aspects, and on analysis and presentation of results.
 
 \subsection{Framework}
-A data handling framework was built around Smoldyn using Python and the Make build system to allow for many simulations to be run in parallel over extended periods. The first stage to this was parameter processing and insertion. This allowed all models to be stored in a spreadsheet, for easy set up and to streamline creation of new molecules based on existing ones. A Python program processed this spreadsheet to build the Smoldyn files for all of the models listed - far more than could reasonably have been constructed by hand. 
+A data handling framework was built around Smoldyn using Python and the Make build system to allow for many simulations to be run in parallel over extended periods. The first stage to this was parameter processing and insertion. This allowed all models to be stored in a spreadsheet, for easy set up and to streamline creation of new molecules based on existing ones. A Python script parsed this spreadsheet to construct the Smoldyn files for all models - far more than could reasonably have been constructed by hand. 
 
-The Make build system was used to schedule simulations. This found all models for which the corresponding results file was out of date or not created yet, and scheduled them for simulation, with the number of concurrent simulations equal to the number of processors available, and new simulations scheduled as old ones were completed. The number of molecules each species in 200 \SI{2.5}{\micro\metre} bins along the anterior-posterior axis of the embryo were logged at the end of each cleavage cycle. Once all results were up to date, they were automatically copied to a folder for analysis, ensuring a consistent results set.
+The Make build system was used to schedule simulations. This found all models for which the corresponding results file was absent or older than their corresponding source, and scheduled them for simulation, with the number of concurrent simulations equal to the number of processors available, and new simulations scheduled as old ones were completed. At each cleavage cycle, the number of molecules each species in 200 \SI{2.5}{\micro\metre} wide slices across the anterior-posterior axis of the embryo were logged. Once all results were up to date, they were automatically copied to a folder for analysis, ensuring a consistent results set.
+
+This analysis was conducted in R. Comprehensive use of functions and scripting allowed every graph to be kept up to date with the latest, most accurate simulations, and for the effects of parameter changes to be rapidly understood.
 
 The Git version control system was used to manage source code and parameter files. This allowed us to roll back unwanted alterations on several occasions, saving significant time. Our full source code is published at \url{git.io/uVrL8g}.
 
-Analysis was conducted in R. Comprehensive use of functions and scripting allowed every graph to be kept up to date and for the effects of parameter changes to be rapidly understood.
-
-\subsection{Accuracy vs Speed}
+\subsection{Accuracy \textit{vs.} Speed}
 Most models required some experimentation to find a point at which the desired level of accuracy could be achieved within a reasonable runtime. Time step lengths were tried between \SI{1}{s} and \SI{10}{s}, while molecule number scaling factors between \num{100} and \num{10000} were used. 
 
-Ensuring simulation accuracy was especially important in simulations of the behaviour of Bicoid mRNA and protein, since for these literature data was available that allowed for accurate parametrization, so that the simulation could be expected to produce quantitatively accurate output. For this reason, these simulations used a \SI{1}{s} time step to ensure a spatial resolution of \SI{4}{\micro\metre}, based on the equation in the Smoldyn manual~\cite{Andrews2011}. A scaling factor of \num{100} was used for all simulations that included just Bicoid, though since these did not have inhibition effects, this affected only precision, not accuracy.
+Ensuring simulation accuracy was especially important in simulations of the behaviour of Bicoid mRNA and protein, since for these literature data was available that allowed for accurate parametrization, so that the simulation could be expected to produce quantitatively accurate output. A scaling factor of \num{100} was used for all simulations that included just Bicoid, though since these did not have inhibition effects, this affected only precision, not accuracy. The timestep used for these simulations was \SI{1}{s} to ensure a spatial resolution of \SI{4}{\micro\metre}, based on the inequalities~\cite{Andrews2011}:
+\begin{equation}
+\Delta t < \frac{s^2}{2D_\text{max}} \text{ and } \Delta t < \frac{1}{k},
+\end{equation}
+where \(\Delta t =\) timestep (\si{\second}), \(s =\) spatial resolution (\si{\micro\metre}), \(D_\text{max} =\) maximum diffusion coefficient (\si{\micro\metre\squared\per\second}) and \(k = \) maximum rate constant (\si{\per\second}).
 
-In the more complex models, such as those including Hunchback, some quantitative accuracy had to be sacrificed for qualitative results, such as by increasing the time step used. Unfortunately, because the Hunchback models took such a disproportionately long time to run, Camgrid was not able to provide a significant speedup, due to Amdahl’s law. A possible extension to this project would be to move to a GPU Smoldyn implementation, which could provide a 130x  speed increase~\cite{Dematte2010}, enabling one to one simulation of the entire system within hours or days.
+In the more complex models, such as those including Hunchback, some quantitative accuracy had to be sacrificed for qualitative results, such as by increasing the time step used. Unfortunately, because the Hunchback models took such a disproportionately long time to run, Camgrid was not able to provide a significant speedup, due to Amdahl’s law. A possible extension to this project would be to move to a GPU Smoldyn implementation, which could provide a \(130 \times\)  speed increase~\cite{Dematte2010}, enabling one to one simulation of the entire system within hours or days.
 
 %\begin{figure}[h]
 %\includegraphics[width=0.5\textwidth]{frame846}
 %\caption{An image from during simulation with all 4 morphogens (Very low molecule count)}
 %\end{figure}
-%\raggedbottom
+\raggedbottom
 \section{Conclusion}
 The best model for Bicoid (the simplest model with a diffusion rate of \SI{4}{\micro\metre\squared\per\second}) and Caudal followed the Flyex data well. Since our model is based on literature derived values, this lends significant support to the relatively simple model of Bicoid diffusion that delivered these results. 
 
+\nopagebreak
 The software framework produced supported simulation construction, execution and analysis excellently, significantly magnifying the amount it was possible to achieve in the time available.
 
 \nocite{*}
